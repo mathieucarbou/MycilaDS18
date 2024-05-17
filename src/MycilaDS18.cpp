@@ -4,6 +4,8 @@
  */
 #include <MycilaDS18.h>
 
+#include <Wire.h>
+
 #define TAG "DS18"
 
 #ifndef GPIO_IS_VALID_OUTPUT_GPIO

@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include <DallasTemperature.h>
-#include <OneWire.h>
+#include "./DallasTemperature.h"
+#include "./OneWire.h"
 
 #ifdef MYCILA_DS18_JSON_SUPPORT
 #include <ArduinoJson.h>

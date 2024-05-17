@@ -71,12 +71,6 @@ jobs:
       - name: Install ArduinoJson
         run: arduino-cli lib install ArduinoJson
 
-      - name: Install OneWire
-        run: arduino-cli lib install OneWire
-
-      - name: Install DallasTemperature
-        run: arduino-cli lib install DallasTemperature
-
       - name: Build Temperature
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/Temperature/Temperature.ino"
 

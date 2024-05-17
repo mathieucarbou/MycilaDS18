@@ -27,9 +27,5 @@
       "platformio.ini",
       "README.md"
     ]
-  },
-  "dependencies": {
-    "paulstoffregen/OneWire": "^2.3.8",
-    "milesburton/DallasTemperature": "^3.11.0"
   }
 }
