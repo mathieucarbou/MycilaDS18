@@ -9,5 +9,25 @@ ESP32 / Arduino Library for Dallas / Maxim Temperature Integrated Circuits
 ## Usage
 
 ```c++
+#include <Arduino.h>
+#include <MycilaDS18.h>
 
+Mycila::DS18 temp;
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial)
+    continue;
+
+  temp.begin(18);
+
+  temp.listen([](float temperature) {
+    Serial.printf("Temperature: %.2f\n", temperature);
+  });
+}
+
+void loop() {
+  temp.read();
+  delay(500);
+}
 ```
