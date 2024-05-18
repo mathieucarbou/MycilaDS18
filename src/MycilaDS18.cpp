@@ -6,6 +6,20 @@
 
 #include <Wire.h>
 
+#ifdef MYCILA_LOGGER_SUPPORT
+#include <MycilaLogger.h>
+extern Mycila::Logger logger;
+#define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
+#define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
+#define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
+#define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
+#else
+#define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
+#define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
+#define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
+#define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
+#endif
+
 #define TAG "DS18"
 
 #ifndef GPIO_IS_VALID_OUTPUT_GPIO
@@ -20,7 +34,7 @@ void Mycila::DS18::begin(const int8_t pin) {
   if (GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
     _pin = (gpio_num_t)pin;
   } else {
-    ESP_LOGE(TAG, "Disable Temperature Sensor: Invalid pin: %" PRId8, pin);
+    LOGE(TAG, "Disable Temperature Sensor: Invalid pin: %" PRId8, pin);
     _pin = GPIO_NUM_NC;
     return;
   }
@@ -32,12 +46,12 @@ void Mycila::DS18::begin(const int8_t pin) {
   _dallas.begin();
 
   if (_dallas.getDS18Count() == 0 || !_dallas.getAddress(_deviceAddress, 0)) {
-    ESP_LOGE(TAG, "No DS18B20 sensor found on pin: %" PRId8, pin);
+    LOGE(TAG, "No DS18B20 sensor found on pin: %" PRId8, pin);
     return;
   }
 
   _dallas.requestTemperaturesByAddress(_deviceAddress);
-  ESP_LOGI(TAG, "Enabled Temperature Sensor on pin: %" PRId8, pin);
+  LOGI(TAG, "Enabled Temperature Sensor on pin: %" PRId8, pin);
   _enabled = true;
 }
 
@@ -47,7 +61,7 @@ void Mycila::DS18::end() {
     _temperature = 0;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
-    ESP_LOGI(TAG, "Disabled Temperature Sensor on pin: %" PRId8, _pin);
+    LOGI(TAG, "Disabled Temperature Sensor on pin: %" PRId8, _pin);
   }
 }
 
@@ -74,7 +88,7 @@ bool Mycila::DS18::read() {
   return true;
 }
 
-#ifdef MYCILA_DS18_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 void Mycila::DS18::toJson(const JsonObject& root) const {
   root["elapsed_time"] = getElapsedTime();
   root["enabled"] = _enabled;

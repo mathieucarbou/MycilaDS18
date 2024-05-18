@@ -80,7 +80,7 @@ jobs:
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/Temperature/Temperature.ino"
 
       - name: Build TemperatureJson
-        run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TemperatureJson/TemperatureJson.ino" --build-property build.extra_flags=-DMYCILA_DS18_JSON_SUPPORT
+        run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TemperatureJson/TemperatureJson.ino" --build-property build.extra_flags=-DMYCILA_JSON_SUPPORT
 
   platformio:
     name: pio ${{ matrix.name }}
@@ -142,4 +142,4 @@ jobs:
         run: platformio ci "examples/Temperature/Temperature.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: Build TemperatureJson
-        run:  PLATFORMIO_BUILD_FLAGS="-DMYCILA_DS18_JSON_SUPPORT" platformio ci "examples/TemperatureJson/TemperatureJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
+        run:  PLATFORMIO_BUILD_FLAGS="-DMYCILA_JSON_SUPPORT" platformio ci "examples/TemperatureJson/TemperatureJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}

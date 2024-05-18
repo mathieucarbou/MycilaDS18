@@ -7,7 +7,7 @@
 #include "./DallasTemperature.h"
 #include "./OneWire.h"
 
-#ifdef MYCILA_DS18_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
 #include <ArduinoJson.h>
 #endif
 
@@ -50,7 +50,7 @@ namespace Mycila {
       uint32_t getElapsedTime() const { return millis() - _lastTime; }
       bool isExpired() const { return _expirationDelay > 0 && (getElapsedTime() >= _expirationDelay * 1000); }
 
-#ifdef MYCILA_DS18_JSON_SUPPORT
+#ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
 #endif
 
