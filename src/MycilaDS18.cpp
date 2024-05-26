@@ -4,8 +4,6 @@
  */
 #include <MycilaDS18.h>
 
-#include <Wire.h>
-
 #ifdef MYCILA_LOGGER_SUPPORT
 #include <MycilaLogger.h>
 extern Mycila::Logger logger;
