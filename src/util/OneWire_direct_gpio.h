@@ -163,6 +163,7 @@ bool directRead(IO_REG_TYPE mask)
 #define IO_REG_TYPE uint32_t
 #define IO_REG_BASE_ATTR
 #define IO_REG_MASK_ATTR
+#define ONEWIRE_GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0)
 
 static inline __attribute__((always_inline))
 IO_REG_TYPE directRead(IO_REG_TYPE pin)
@@ -211,7 +212,7 @@ void directModeInput(IO_REG_TYPE pin)
 #if CONFIG_IDF_TARGET_ESP32C3
     GPIO.enable_w1tc.val = ((uint32_t)1 << (pin));
 #else
-    if ( digitalPinIsValid(pin) )
+    if ( ONEWIRE_GPIO_IS_VALID_OUTPUT_GPIO(pin) )
     {
 #if ESP_IDF_VERSION_MAJOR < 4      // IDF 3.x ESP32/PICO-D4
         uint32_t rtc_reg(rtc_gpio_desc[pin].reg);
@@ -237,7 +238,7 @@ void directModeOutput(IO_REG_TYPE pin)
 #if CONFIG_IDF_TARGET_ESP32C3
     GPIO.enable_w1ts.val = ((uint32_t)1 << (pin));
 #else
-    if ( digitalPinIsValid(pin) && pin <= 33 ) // pins above 33 can be only inputs
+    if ( ONEWIRE_GPIO_IS_VALID_OUTPUT_GPIO(pin) && pin <= 33 ) // pins above 33 can be only inputs
     {
 #if ESP_IDF_VERSION_MAJOR < 4      // IDF 3.x ESP32/PICO-D4
         uint32_t rtc_reg(rtc_gpio_desc[pin].reg);
