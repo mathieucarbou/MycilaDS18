@@ -4,8 +4,12 @@
  */
 #pragma once
 
-#include "./DallasTemperature.h"
-#include "./OneWire.h"
+#include <esp_idf_version.h>
+#if ESP_IDF_VERSION_MAJOR < 5
+#include "./esp32-ds18b20-1.0.7/OneWireESP32.h"
+#else
+#include "./esp32-ds18b20-2.0.0/OneWireESP32.h"
+#endif
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
@@ -16,7 +20,12 @@
 #define MYCILA_DS18_VERSION_MINOR    0
 #define MYCILA_DS18_VERSION_REVISION 1
 
-// If the temperature is changing from less than 0.3 degrees, we consider it has not changed
+// If the temperature is changing from less than 0.3 degrees, we consider it has not changed, to avoid too many updates
+// Example:
+// [105300][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.19
+// [105826][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.12
+// [106352][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.19
+// [106878][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.12
 #ifndef MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE
   #define MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE 0.3
 #endif
@@ -55,9 +64,8 @@ namespace Mycila {
 #endif
 
     private:
-      OneWire _oneWire;
-      DallasTemperature _dallas;
-      DeviceAddress _deviceAddress;
+      OneWire32 *_oneWire = nullptr;
+      uint64_t _deviceAddress = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;
       float _temperature = 0;

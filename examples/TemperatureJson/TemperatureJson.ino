@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <MycilaDS18.h>
 #include <ArduinoJson.h>
+#include <MycilaDS18.h>
 
 Mycila::DS18 temp;
 
@@ -21,6 +21,8 @@ void setup() {
 void loop() {
   if (!temp.read()) {
     Serial.println("Not ready yet");
+  } else {
+    Serial.println("Temperature: " + String(temp.getLastTemperature()));
   }
   delay(500);
 }
