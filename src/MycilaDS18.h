@@ -8,17 +8,17 @@
 #include "./OneWire.h"
 
 #ifdef MYCILA_JSON_SUPPORT
-#include <ArduinoJson.h>
+  #include <ArduinoJson.h>
 #endif
 
-#define MYCILA_DS18_VERSION "2.0.1"
-#define MYCILA_DS18_VERSION_MAJOR 2
-#define MYCILA_DS18_VERSION_MINOR 0
+#define MYCILA_DS18_VERSION          "2.0.1"
+#define MYCILA_DS18_VERSION_MAJOR    2
+#define MYCILA_DS18_VERSION_MINOR    0
 #define MYCILA_DS18_VERSION_REVISION 1
 
 // If the temperature is changing from less than 0.3 degrees, we consider it has not changed
 #ifndef MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE
-#define MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE 0.3
+  #define MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE 0.3
 #endif
 
 namespace Mycila {
