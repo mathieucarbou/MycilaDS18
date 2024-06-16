@@ -38,11 +38,8 @@ jobs:
             --repository=. \
             --recursive \
             --filter=-whitespace/line_length,-whitespace/braces,-whitespace/comments,-runtime/indentation_namespace,-whitespace/indent,-readability/braces,-whitespace/newline,-readability/todo,-build/c++11 \
-            --exclude=src/DallasTemperature.h \
-            --exclude=src/DallasTemperature.cpp \
-            --exclude=src/OneWire.h \
-            --exclude=src/OneWire.cpp \
-            --exclude=src/util \
+            --exclude=src/esp32-ds18b20-1.0.7 \
+            --exclude=src/esp32-ds18b20-2.0.0 \
             src
 
   arduino:

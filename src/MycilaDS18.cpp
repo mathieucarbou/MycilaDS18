@@ -18,12 +18,14 @@ extern Mycila::Logger logger;
   #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
 #endif
 
-#define TAG "DS18"
+#define TAG "DS18B20"
 
 #ifndef GPIO_IS_VALID_OUTPUT_GPIO
   #define GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) ((gpio_num >= 0) && \
                                                (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
 #endif
+
+static const char* err_desc[] = {"", "CRC ERROR", "BAD DATA", "TIMEOUT", "DRIVER NOT INITIALIZED"};
 
 void Mycila::DS18::begin(const int8_t pin) {
   if (_enabled)
@@ -37,45 +39,59 @@ void Mycila::DS18::begin(const int8_t pin) {
     return;
   }
 
-  _oneWire.begin(_pin);
-
-  _dallas.setOneWire(&_oneWire);
-  _dallas.setWaitForConversion(false);
-  _dallas.begin();
-
-  if (_dallas.getDS18Count() == 0 || !_dallas.getAddress(_deviceAddress, 0)) {
+  _oneWire = new OneWire32(_pin);
+  if (!_oneWire->search(&_deviceAddress, 1)) {
     LOGE(TAG, "No DS18B20 sensor found on pin: %" PRId8, pin);
     return;
   }
 
-  _dallas.requestTemperaturesByAddress(_deviceAddress);
-  LOGI(TAG, "Enabled Temperature Sensor on pin: %" PRId8, pin);
+  _oneWire->request();
+
+  LOGI(TAG, "0x%llx on pin %d: Enabled", _deviceAddress, _pin);
   _enabled = true;
 }
 
 void Mycila::DS18::end() {
   if (_enabled) {
+    LOGI(TAG, "0x%llx on pin %d: Ending", _deviceAddress, _pin);
     _enabled = false;
     _temperature = 0;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
-    LOGI(TAG, "Disabled Temperature Sensor on pin: %" PRId8, _pin);
+    _deviceAddress = 0;
+    delete _oneWire;
   }
 }
 
 bool Mycila::DS18::read() {
   if (!_enabled)
-    return 0;
+    return false;
 
-  float read = _dallas.getTempC(_deviceAddress);
+  float read;
+  uint8_t err = _oneWire->getTemp(_deviceAddress, read);
+  if (err) {
+    LOGW(TAG, "0x%llx on pin %d: Read error: %s", _deviceAddress, _pin, err_desc[err]);
+  } else {
+    LOGD(TAG, "0x%llx on pin %d: Read success: %.2f", _deviceAddress, _pin, read);
+  }
 
-  // invalid read or not ready yet
+  // request new reading
+  _oneWire->request();
+
+  // process data when no error
+  if (err) {
+    return false;
+  }
+
+  // discard any invalid read
   if (isnan(read) || read <= 0)
     return false;
 
-  read = round(read * 100) / 100;
+  // read is valid, record the time
   _lastTime = millis();
-  _dallas.requestTemperaturesByAddress(_deviceAddress);
+
+  // make it on 2 decimals
+  read = round(read * 100) / 100;
 
   if (abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || isExpired()) {
     _temperature = read;
