@@ -40,22 +40,27 @@ void Mycila::DS18::begin(const int8_t pin) {
   }
 
   _oneWire = new OneWire32(_pin);
-  if (!_oneWire->search(&_deviceAddress, 1)) {
+  uint32_t start = millis();
+  LOGD(TAG, "Searching for DS18B20 sensor on pin: %" PRId8 "...", pin);
+  while (!_oneWire->search(&_deviceAddress, 1) && millis() - start < 2000) {
+    delay(10);
+  }
+  if (!_deviceAddress) {
     LOGE(TAG, "No DS18B20 sensor found on pin: %" PRId8, pin);
     return;
   }
 
   _oneWire->request();
 
-  LOGI(TAG, "0x%llx on pin %d: Enabled", _deviceAddress, _pin);
+  LOGI(TAG, "0x%llx on pin %d enabled!", _deviceAddress, _pin);
   _enabled = true;
 }
 
 void Mycila::DS18::end() {
   if (_enabled) {
-    LOGI(TAG, "0x%llx on pin %d: Ending", _deviceAddress, _pin);
+    LOGI(TAG, "0x%llx on pin %d disabled!", _deviceAddress, _pin);
     _enabled = false;
-    _temperature = 0;
+    _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
     _deviceAddress = 0;
@@ -93,7 +98,7 @@ bool Mycila::DS18::read() {
   // make it on 2 decimals
   read = round(read * 100) / 100;
 
-  if (abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || isExpired()) {
+  if (abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid()) {
     _temperature = read;
     if (_callback)
       _callback(_temperature);

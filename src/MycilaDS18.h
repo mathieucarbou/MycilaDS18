@@ -6,9 +6,9 @@
 
 #include <esp_idf_version.h>
 #if ESP_IDF_VERSION_MAJOR < 5
-#include "./esp32-ds18b20-1.0.7/OneWireESP32.h"
+  #include "./esp32-ds18b20-1.0.7/OneWireESP32.h"
 #else
-#include "./esp32-ds18b20-2.0.0/OneWireESP32.h"
+  #include "./esp32-ds18b20-2.0.0/OneWireESP32.h"
 #endif
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -28,6 +28,10 @@
 // [106878][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.12
 #ifndef MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE
   #define MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE 0.3
+#endif
+
+#ifndef MYCILA_DS18_INVALID_TEMPERATURE
+  #define MYCILA_DS18_INVALID_TEMPERATURE 0
 #endif
 
 namespace Mycila {
@@ -58,17 +62,19 @@ namespace Mycila {
       uint32_t getLastTime() const { return _lastTime; }
       uint32_t getElapsedTime() const { return millis() - _lastTime; }
       bool isExpired() const { return _expirationDelay > 0 && (getElapsedTime() >= _expirationDelay * 1000); }
+      bool isValid() const { return _enabled && _lastTime > 0 && _temperature != MYCILA_DS18_INVALID_TEMPERATURE && !isExpired(); }
+      float getValidTemperature() const { return isValid() ? _temperature : MYCILA_DS18_INVALID_TEMPERATURE; }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
 #endif
 
     private:
-      OneWire32 *_oneWire = nullptr;
+      OneWire32* _oneWire = nullptr;
       uint64_t _deviceAddress = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;
-      float _temperature = 0;
+      float _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
       uint32_t _lastTime = 0;
       uint32_t _expirationDelay = 0;
       DS18ChangeCallback _callback = nullptr;
