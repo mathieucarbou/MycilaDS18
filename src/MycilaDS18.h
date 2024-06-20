@@ -22,10 +22,10 @@
 
 // If the temperature is changing from less than 0.3 degrees, we consider it has not changed, to avoid too many updates
 // Example:
-// [105300][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.19
-// [105826][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.12
-// [106352][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.19
-// [106878][D][MycilaDS18.cpp:75] read(): [DS18B20] 0x6ba9645509646128 on pin 18: Read success:: 25.12
+// [105300][D][MycilaDS18.cpp:75] read(): [DS18] 0x6ba9645509646128 on pin 18: Read success:: 25.19
+// [105826][D][MycilaDS18.cpp:75] read(): [DS18] 0x6ba9645509646128 on pin 18: Read success:: 25.12
+// [106352][D][MycilaDS18.cpp:75] read(): [DS18] 0x6ba9645509646128 on pin 18: Read success:: 25.19
+// [106878][D][MycilaDS18.cpp:75] read(): [DS18] 0x6ba9645509646128 on pin 18: Read success:: 25.12
 #ifndef MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE
   #define MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE 0.3
 #endif
@@ -33,6 +33,12 @@
 #ifndef MYCILA_DS18_INVALID_TEMPERATURE
   #define MYCILA_DS18_INVALID_TEMPERATURE 0
 #endif
+
+#define MYCILA_DS18_DS18S20  0x10
+#define MYCILA_DS18_DS1822   0x22
+#define MYCILA_DS18_DS18B20  0x28
+#define MYCILA_DS18_DS1825   0x3B
+#define MYCILA_DS18_DS28EA00 0x42
 
 namespace Mycila {
   typedef std::function<void(float temperature)> DS18ChangeCallback;
@@ -45,8 +51,25 @@ namespace Mycila {
 
       void listen(DS18ChangeCallback callback) { _callback = callback; }
 
-      void begin(const int8_t pin);
+      void begin(const int8_t pin, uint8_t maxSearchCount = 10);
       void end();
+
+      const char* getModel() const {
+        switch (_deviceAddress & 0xFF) {
+          case MYCILA_DS18_DS18S20:
+            return "DS18S20";
+          case MYCILA_DS18_DS1822:
+            return "DS1822";
+          case MYCILA_DS18_DS18B20:
+            return "DS18B20";
+          case MYCILA_DS18_DS1825:
+            return "DS1825";
+          case MYCILA_DS18_DS28EA00:
+            return "DS28EA00";
+          default:
+            return "Unknown";
+        }
+      }
 
       // Read the temperature from the sensor (async and non-blocking)
       // Check if a reading is available and if so, process it and request another reading
@@ -74,6 +97,7 @@ namespace Mycila {
       uint64_t _deviceAddress = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;
+      const char* _name = "Unknown";
       float _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
       uint32_t _lastTime = 0;
       uint32_t _expirationDelay = 0;

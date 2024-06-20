@@ -1,7 +1,7 @@
 {
   "name": "MycilaDS18",
   "version": "3.0.1",
-  "description": "ESP32 / Arduino Library for Dallas / Maxim DS18B20 sensor using RMT peripheral",
+  "description": "ESP32 / Arduino Library for Dallas / Maxim DS18 sensor using RMT peripheral",
   "homepage": "https://github.com/mathieucarbou/MycilaDS18",
   "repository": {
     "type": "git",

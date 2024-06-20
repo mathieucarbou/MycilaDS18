@@ -4,9 +4,9 @@
 [![Continuous Integration](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/mathieucarbou/library/MycilaDS18.svg)](https://registry.platformio.org/libraries/mathieucarbou/MycilaDS18)
 
-ESP32 / Arduino Library for Dallas / Maxim DS18B20 sensor using RMT peripheral
+ESP32 / Arduino Library for Dallas / Maxim DS18 sensors using RMT peripheral
 
-- This library is using the implementation from https://github.com/junkfix/esp32-ds18b20 based on EP32 RMT peripheral to read the temperature from DS18B20 sensors.
+- This library is using the implementation from https://github.com/junkfix/esp32-ds18b20 based on EP32 RMT peripheral to read the temperature from DS18 sensors.
 - It is compatible with Arduino 2 and 3
 - It is compatible with the DS18B20 sensor
 - Non-blocking and callback support
