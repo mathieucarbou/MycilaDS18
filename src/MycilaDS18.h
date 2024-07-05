@@ -8,7 +8,7 @@
 #if ESP_IDF_VERSION_MAJOR < 5
   #include "./esp32-ds18b20-1.0.7/OneWireESP32.h"
 #else
-  #include "./esp32-ds18b20-2.0.0/OneWireESP32.h"
+  #include "./esp32-ds18b20-2.0.1/OneWireESP32.h"
 #endif
 
 #ifdef MYCILA_JSON_SUPPORT

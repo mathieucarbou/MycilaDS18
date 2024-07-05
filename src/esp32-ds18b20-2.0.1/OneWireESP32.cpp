@@ -71,7 +71,7 @@ OneWire32::OneWire32(uint8_t pin) {
     .gpio_num = owpin,
     .clk_src = RMT_CLK_SRC_APB,
     .resolution_hz = 1000000,
-    .mem_block_symbols = 64,
+    .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
     .flags = {
       .invert_in = 0,
       .with_dma = 0,
@@ -86,7 +86,7 @@ OneWire32::OneWire32(uint8_t pin) {
     .gpio_num = owpin,
     .clk_src = RMT_CLK_SRC_APB,
     .resolution_hz = 1000000,
-    .mem_block_symbols = 64,
+    .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
     .trans_queue_depth = 4,
     .intr_priority = 0,
     .flags = {
@@ -95,17 +95,12 @@ OneWire32::OneWire32(uint8_t pin) {
       .io_loop_back = 1,
       .io_od_mode = 1}};
 
-  if (rmt_new_tx_channel(&txconf, &(owtx)) != ESP_OK) {
+  if (rmt_new_tx_channel(&txconf, &owtx) != ESP_OK) {
     return;
   }
 
   owqueue = xQueueCreate(1, sizeof(rmt_rx_done_event_data_t));
   if (owqueue == NULL) {
-    return;
-  }
-
-  owbuf = (rmt_symbol_word_t*)malloc(owbuflen);
-  if (owbuf == NULL) {
     return;
   }
 
@@ -153,9 +148,6 @@ OneWire32::~OneWire32() {
   if (owqueue) {
     vQueueDelete(owqueue);
   }
-  if (owbuf != NULL) {
-    free(owbuf);
-  }
   drv = 0;
 }
 
@@ -174,7 +166,7 @@ bool OneWire32::reset() {
     .level1 = 1};
 
   rmt_rx_done_event_data_t evt;
-  rmt_receive(owrx, owbuf, owbuflen, &owrxconf);
+  rmt_receive(owrx, owbuf, sizeof(owbuf), &owrxconf);
   rmt_transmit(owtx, owcenc, &symbol_reset, sizeof(rmt_symbol_word_t), &owtxconf);
   bool found = false;
   if (xQueueReceive(owqueue, &evt, pdMS_TO_TICKS(OW_TIMEOUT)) == pdTRUE) {
@@ -202,7 +194,7 @@ bool OneWire32::reset() {
 bool OneWire32::read(uint8_t& data, uint8_t len) {
 
   rmt_rx_done_event_data_t evt;
-  rmt_receive(owrx, owbuf, owbuflen, &owrxconf);
+  rmt_receive(owrx, owbuf, sizeof(owbuf), &owrxconf);
 
   if (!write((len > 1) ? 0xff : 1, len) || xQueueReceive(owqueue, &evt, pdMS_TO_TICKS(OW_TIMEOUT)) != pdTRUE) {
     return false;
@@ -224,7 +216,6 @@ bool OneWire32::read(uint8_t& data, uint8_t len) {
 }
 
 bool OneWire32::write(const uint8_t data, uint8_t len) {
-  size_t ssz = sizeof(rmt_symbol_word_t);
 
   if (len < 8) {
     const rmt_symbol_word_t* sb;
@@ -233,7 +224,7 @@ bool OneWire32::write(const uint8_t data, uint8_t len) {
       if ((data & (1 << i)) != 0) {
         sb = &ow_bit1;
       }
-      if (rmt_transmit(owtx, owcenc, sb, ssz, &owtxconf) != ESP_OK) {
+      if (rmt_transmit(owtx, owcenc, sb, sizeof(rmt_symbol_word_t), &owtxconf) != ESP_OK) {
         return false;
       }
     }
