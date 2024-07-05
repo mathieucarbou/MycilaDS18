@@ -98,8 +98,8 @@ namespace Mycila {
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;
       const char* _name = "Unknown";
-      float _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
-      uint32_t _lastTime = 0;
+      volatile float _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
+      volatile uint32_t _lastTime = 0;
       uint32_t _expirationDelay = 0;
       DS18ChangeCallback _callback = nullptr;
   };
