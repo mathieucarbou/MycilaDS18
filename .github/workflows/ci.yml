@@ -38,8 +38,7 @@ jobs:
             --repository=. \
             --recursive \
             --filter=-whitespace/line_length,-whitespace/braces,-whitespace/comments,-runtime/indentation_namespace,-whitespace/indent,-readability/braces,-whitespace/newline,-readability/todo,-build/c++11 \
-            --exclude=src/esp32-ds18b20-1.0.7 \
-            --exclude=src/esp32-ds18b20-2.0.0 \
+            --exclude=src/esp32-ds18b20-* \
             src
 
   arduino:
