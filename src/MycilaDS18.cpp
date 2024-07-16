@@ -64,7 +64,7 @@ void Mycila::DS18::end() {
   if (_enabled) {
     LOGI(TAG, "%s 0x%llx @ pin %d disabled!", _name, _deviceAddress, _pin);
     _enabled = false;
-    _temperature = MYCILA_DS18_INVALID_TEMPERATURE;
+    _temperature = 0;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
     _deviceAddress = 0;
@@ -89,7 +89,7 @@ bool Mycila::DS18::read() {
   }
 
   // discard any invalid read
-  if (isnan(read) || read == MYCILA_DS18_INVALID_TEMPERATURE)
+  if (isnan(read))
     return false;
 
   // read is valid, record the time
@@ -110,10 +110,11 @@ bool Mycila::DS18::read() {
 
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::DS18::toJson(const JsonObject& root) const {
-  root["elapsed_time"] = getElapsedTime();
+  root["elapsed"] = getElapsedTime();
   root["enabled"] = _enabled;
   root["expired"] = isExpired();
-  root["last_temp"] = _temperature;
-  root["last_time"] = _lastTime;
+  root["temp"] = getTemperature().value_or(0);
+  root["time"] = _lastTime;
+  root["valid"] = isValid();
 }
 #endif

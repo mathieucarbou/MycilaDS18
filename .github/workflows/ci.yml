@@ -127,7 +127,13 @@ jobs:
       - run: platformio platform install ${{ matrix.platform }}
         
       - name: Build Temperature
-        run: platformio ci "examples/Temperature/Temperature.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
+        run: |
+          PLATFORMIO_BUILD_FLAGS="-std=c++17 -std=gnu++17" \
+          PLATFORMIO_BUILD_UNFLAGS="-std=gnu++11" \
+          platformio ci "examples/Temperature/Temperature.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
       - name: Build TemperatureJson
-        run:  PLATFORMIO_BUILD_FLAGS="-DMYCILA_JSON_SUPPORT" platformio ci "examples/TemperatureJson/TemperatureJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
+        run:  |
+          PLATFORMIO_BUILD_FLAGS="-std=c++17 -std=gnu++17 -DMYCILA_JSON_SUPPORT" \
+          PLATFORMIO_BUILD_UNFLAGS="-std=gnu++11" \
+          platformio ci "examples/TemperatureJson/TemperatureJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}

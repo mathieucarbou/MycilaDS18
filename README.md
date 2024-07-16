@@ -10,6 +10,7 @@ ESP32 / Arduino Library for Dallas / Maxim DS18 sensors using RMT peripheral
 - It is compatible with Arduino 2 and 3
 - It is compatible with the DS18B20 sensor
 - Non-blocking and callback support
+- Support value expiration
 
 ## Usage
 
@@ -37,7 +38,7 @@ void loop() {
   if (!temp.read()) {
     Serial.println("Not ready yet");
   } else {
-    Serial.println("Temperature: " + String(temp.getLastTemperature()));
+    Serial.println("Temperature: " + String(temp.getTemperature().value_or(0)));
   }
   delay(500);
 }

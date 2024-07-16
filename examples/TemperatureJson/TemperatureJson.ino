@@ -22,7 +22,7 @@ void loop() {
   if (!temp.read()) {
     Serial.println("Not ready yet");
   } else {
-    Serial.println("Temperature: " + String(temp.getLastTemperature()));
+    Serial.println("Temperature: " + String(temp.getTemperature().value_or(0)));
   }
   delay(500);
 }
