@@ -90,26 +90,41 @@ jobs:
             board: esp32dev
             platform: espressif32
             opts:
-          - name: esp32dev|arduino-2
-            board: esp32dev
-            platform: espressif32@6.7.0
-            opts:
-          - name: esp32dev|arduino-3
-            board: esp32dev
-            platform: espressif32
-            opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.3, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/arduino-esp32/releases/download/3.0.3/esp32-arduino-libs-3.0.3.zip'"
           - name: esp32-s3-devkitc-1|arduino
             board: esp32-s3-devkitc-1
             platform: espressif32
+            opts:
+  
+          - name: esp32dev|arduino-2
+            board: esp32dev
+            platform: espressif32@6.7.0
             opts:
           - name: esp32-s3-devkitc-1|arduino-2
             board: esp32-s3-devkitc-1
             platform: espressif32@6.7.0
             opts:
+  
+          - name: esp32dev|arduino-3
+            board: esp32dev
+            platform: espressif32
+            opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.3, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/arduino-esp32/releases/download/3.0.3/esp32-arduino-libs-3.0.3.zip'"
           - name: esp32-s3-devkitc-1|arduino-3
             board: esp32-s3-devkitc-1
             platform: espressif32
             opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.3, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/arduino-esp32/releases/download/3.0.3/esp32-arduino-libs-3.0.3.zip'"
+
+          - name: esp32dev|pioarduino
+            board: esp32dev
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
+          - name: esp32-s3-devkitc-1|pioarduino
+            board: esp32-s3-devkitc-1
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
+          - name: esp32-c6-devkitc-1|pioarduino
+            board: esp32-c6-devkitc-1
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
 
     steps:
       - uses: actions/checkout@v4

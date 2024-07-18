@@ -69,7 +69,7 @@ OneWire32::OneWire32(uint8_t pin) {
 
   const rmt_rx_channel_config_t rxconf = {
     .gpio_num = owpin,
-    .clk_src = RMT_CLK_SRC_APB,
+    .clk_src = RMT_CLK_SRC_DEFAULT,
     .resolution_hz = 1000000,
     .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
     .flags = {
@@ -84,7 +84,7 @@ OneWire32::OneWire32(uint8_t pin) {
 
   const rmt_tx_channel_config_t txconf = {
     .gpio_num = owpin,
-    .clk_src = RMT_CLK_SRC_APB,
+    .clk_src = RMT_CLK_SRC_DEFAULT,
     .resolution_hz = 1000000,
     .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
     .trans_queue_depth = 4,
