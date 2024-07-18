@@ -62,19 +62,22 @@ void Mycila::DS18::begin(const int8_t pin, uint8_t maxSearchCount) {
 
 void Mycila::DS18::end() {
   if (_enabled) {
-    LOGI(TAG, "%s 0x%llx @ pin %d disabled!", _name, _deviceAddress, _pin);
+    std::lock_guard<std::mutex> lock(_mutex);
     _enabled = false;
+    delete _oneWire;
     _temperature = 0;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
     _deviceAddress = 0;
-    delete _oneWire;
+    LOGI(TAG, "%s 0x%llx @ pin %d disabled!", _name, _deviceAddress, _pin);
   }
 }
 
 bool Mycila::DS18::read() {
   if (!_enabled)
     return false;
+
+  std::lock_guard<std::mutex> lock(_mutex);
 
   float read;
   uint8_t err = _oneWire->getTemp(_deviceAddress, read);

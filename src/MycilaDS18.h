@@ -15,6 +15,7 @@
   #include <ArduinoJson.h>
 #endif
 
+#include <mutex>
 #include <optional>
 
 #define MYCILA_DS18_VERSION          "4.0.1"
@@ -109,5 +110,6 @@ namespace Mycila {
       uint32_t _lastTime = 0;
       uint32_t _expirationDelay = 0;
       DS18ChangeCallback _callback = nullptr;
+      std::mutex _mutex;
   };
 } // namespace Mycila
