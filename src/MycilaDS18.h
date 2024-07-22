@@ -40,7 +40,9 @@
 #define MYCILA_DS18_DS28EA00 0x42
 
 namespace Mycila {
-  typedef std::function<void(float temperature)> DS18ChangeCallback;
+  // callback signature for temperature reads.
+  // "changed" will be true if the temperature has changed by more than "MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE" degrees
+  typedef std::function<void(float temperature, bool changed)> DS18ChangeCallback;
   class DS18 {
     public:
       ~DS18() { end(); }

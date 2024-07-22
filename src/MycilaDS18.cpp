@@ -101,12 +101,15 @@ bool Mycila::DS18::read() {
   // make it on 2 decimals
   read = round(read * 100) / 100;
 
-  if (abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid()) {
+  const bool changed = abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid();
+
+  if (changed) {
     _temperature = read;
     LOGD(TAG, "%s 0x%llx @ pin %d: %.2f °C", _name, _deviceAddress, _pin, read);
-    if (_callback)
-      _callback(_temperature);
   }
+
+  if (_callback)
+    _callback(_temperature, changed);
 
   return true;
 }

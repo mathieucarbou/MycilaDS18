@@ -10,7 +10,7 @@ void setup() {
     continue;
 
   temp.begin(18);
-  temp.listen([](float temperature) {
+  temp.listen([](float temperature, bool changed) {
     JsonDocument doc;
     temp.toJson(doc.to<JsonObject>());
     serializeJson(doc, Serial);
