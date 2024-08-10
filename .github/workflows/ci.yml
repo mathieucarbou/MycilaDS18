@@ -115,16 +115,16 @@ jobs:
 
           - name: esp32dev|pioarduino
             board: esp32dev
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
           - name: esp32-s3-devkitc-1|pioarduino
             board: esp32-s3-devkitc-1
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
           - name: esp32-c6-devkitc-1|pioarduino
             board: esp32-c6-devkitc-1
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.03/platform-espressif32.zip'"
+            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
+            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
 
     steps:
       - uses: actions/checkout@v4
