@@ -87,7 +87,7 @@ namespace Mycila {
       uint32_t getLastTime() const { return _lastTime; }
 
       // Get the elapsed time since the last reading
-      uint32_t getElapsedTime() const { return millis() - _lastTime; }
+      uint32_t getElapsedTime() const { return _enabled ? millis() - _lastTime : 0; }
 
       // Check if the last reading has expired
       bool isExpired() const { return _expirationDelay > 0 && (getElapsedTime() >= _expirationDelay * 1000); }
