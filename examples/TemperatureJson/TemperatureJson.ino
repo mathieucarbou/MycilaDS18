@@ -24,5 +24,5 @@ void loop() {
   } else {
     Serial.println("Temperature: " + String(temp.getTemperature().value_or(0)));
   }
-  delay(500);
+  delay(2000);
 }

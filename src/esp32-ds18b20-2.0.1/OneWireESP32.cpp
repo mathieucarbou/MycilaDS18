@@ -43,19 +43,22 @@ const rmt_transmit_config_t owtxconf = {
   .flags = {
     .eot_level = 1,
     .queue_nonblocking = 1}};
+
 const rmt_receive_config_t owrxconf = {
   .signal_range_min_ns = 1000,
   .signal_range_max_ns = (OW_RESET_PULSE + OW_RESET_WAIT) * 1000,
+  #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 3, 0)
+  .flags = {.en_partial_rx = 0}
+  #endif
 };
 
 OneWire32::OneWire32(uint8_t pin) {
   owpin = static_cast<gpio_num_t>(pin);
 
-  rmt_bytes_encoder_config_t bnc = {
-    .bit0 = ow_bit0,
-    .bit1 = ow_bit1,
-    .flags = {
-      .msb_first = 0}};
+  rmt_bytes_encoder_config_t bnc;
+  bnc.bit0 = ow_bit0;
+  bnc.bit1 = ow_bit1;
+  bnc.flags.msb_first = 0;
 
   if (rmt_new_bytes_encoder(&bnc, &(owbenc)) != ESP_OK) {
     return;
@@ -67,33 +70,31 @@ OneWire32::OneWire32(uint8_t pin) {
     return;
   }
 
-  const rmt_rx_channel_config_t rxconf = {
-    .gpio_num = owpin,
-    .clk_src = RMT_CLK_SRC_DEFAULT,
-    .resolution_hz = 1000000,
-    .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
-    .flags = {
-      .invert_in = 0,
-      .with_dma = 0,
-      .io_loop_back = 0},
-    .intr_priority = 0};
+  rmt_rx_channel_config_t rxconf;
+  rxconf.gpio_num = owpin;
+  rxconf.clk_src = RMT_CLK_SRC_DEFAULT;
+  rxconf.resolution_hz = 1000000;
+  rxconf.mem_block_symbols = MYCILA_DS18_MAX_BLOCKS;
+  rxconf.flags.invert_in = 0;
+  rxconf.flags.with_dma = 0;
+  rxconf.flags.io_loop_back = 0;
+  rxconf.intr_priority = 0;
 
   if (rmt_new_rx_channel(&rxconf, &(owrx)) != ESP_OK) {
     return;
   }
 
-  const rmt_tx_channel_config_t txconf = {
-    .gpio_num = owpin,
-    .clk_src = RMT_CLK_SRC_DEFAULT,
-    .resolution_hz = 1000000,
-    .mem_block_symbols = MYCILA_DS18_MAX_BLOCKS,
-    .trans_queue_depth = 4,
-    .intr_priority = 0,
-    .flags = {
-      .invert_out = 0,
-      .with_dma = 0,
-      .io_loop_back = 1,
-      .io_od_mode = 1}};
+  rmt_tx_channel_config_t txconf;
+  txconf.gpio_num = owpin;
+  txconf.clk_src = RMT_CLK_SRC_DEFAULT;
+  txconf.resolution_hz = 1000000;
+  txconf.mem_block_symbols = MYCILA_DS18_MAX_BLOCKS;
+  txconf.trans_queue_depth = 4;
+  txconf.intr_priority = 0;
+  txconf.flags.invert_out = 0;
+  txconf.flags.with_dma = 0;
+  txconf.flags.io_loop_back = 1;
+  txconf.flags.io_od_mode = 1;
 
   if (rmt_new_tx_channel(&txconf, &owtx) != ESP_OK) {
     return;
@@ -104,8 +105,8 @@ OneWire32::OneWire32(uint8_t pin) {
     return;
   }
 
-  rmt_rx_event_callbacks_t rx_callbacks = {
-    .on_recv_done = owrxdone};
+  rmt_rx_event_callbacks_t rx_callbacks;
+  rx_callbacks.on_recv_done = owrxdone;
 
   if (rmt_rx_register_event_callbacks(owrx, &rx_callbacks, owqueue) != ESP_OK) {
     return;
@@ -119,12 +120,12 @@ OneWire32::OneWire32(uint8_t pin) {
     return;
   }
 
-  static rmt_symbol_word_t release_symbol = {
-    .duration0 = 1,
-    .level0 = 1,
-    .duration1 = 0,
-    .level1 = 1,
-  };
+  static rmt_symbol_word_t release_symbol;
+  release_symbol.duration0 = 1;
+  release_symbol.level0 = 1;
+  release_symbol.duration1 = 0;
+  release_symbol.level1 = 1;
+
   rmt_transmit(owtx, owcenc, &release_symbol, sizeof(rmt_symbol_word_t), &owtxconf);
 
   drv = 1;
@@ -159,11 +160,11 @@ bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, vo
 
 bool OneWire32::reset() {
 
-  rmt_symbol_word_t symbol_reset = {
-    .duration0 = OW_RESET_PULSE,
-    .level0 = 0,
-    .duration1 = OW_RESET_WAIT,
-    .level1 = 1};
+  rmt_symbol_word_t symbol_reset;
+  symbol_reset.duration0 = OW_RESET_PULSE;
+  symbol_reset.level0 = 0;
+  symbol_reset.duration1 = OW_RESET_WAIT;
+  symbol_reset.level1 = 1;
 
   rmt_rx_done_event_data_t evt;
   rmt_receive(owrx, owbuf, sizeof(owbuf), &owrxconf);

@@ -18,5 +18,5 @@ void loop() {
   if (!temp.read()) {
     Serial.println("Not ready yet");
   }
-  delay(500);
+  delay(2000);
 }
