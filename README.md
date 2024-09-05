@@ -1,8 +1,14 @@
 # MycilaDS18
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Continuous Integration](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/release/mathieucarbou/MycilaDS18.svg)](https://GitHub.com/mathieucarbou/MycilaDS18/releases/)
 [![PlatformIO Registry](https://badges.registry.platformio.org/packages/mathieucarbou/library/MycilaDS18.svg)](https://registry.platformio.org/libraries/mathieucarbou/MycilaDS18)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
+
+[![Build](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml)
+[![GitHub latest commit](https://badgen.net/github/last-commit/mathieucarbou/MycilaDS18)](https://GitHub.com/mathieucarbou/MycilaDS18/commit/)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/mathieucarbou/MycilaDS18)
 
 ESP32 / Arduino Library for Dallas / Maxim DS18 sensors using RMT peripheral
 

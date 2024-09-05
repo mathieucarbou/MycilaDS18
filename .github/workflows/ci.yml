@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: Continuous Integration
+name: Build
 
 on:
   workflow_dispatch:
@@ -78,77 +78,56 @@ jobs:
       - name: Build TemperatureJson
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TemperatureJson/TemperatureJson.ino" --build-property build.extra_flags=-DMYCILA_JSON_SUPPORT
 
+  pio_envs:
+    name: Get PlatformIO Envs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          key: pip
+          path: ~/.cache/pip
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+      - name: Get Envs
+        id: envs
+        run: |
+          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:") and (endswith("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
+
+    outputs:
+      pio_default_envs: ${{ steps.envs.outputs.pio_default_envs }}
+
   platformio:
-    name: pio ${{ matrix.name }}
-    needs: cpplint
+    name: "pio:${{ matrix.environment }}"
+    needs: [pio_envs]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: esp32dev|arduino
-            board: esp32dev
-            platform: espressif32
-            opts:
-          - name: esp32-s3-devkitc-1|arduino
-            board: esp32-s3-devkitc-1
-            platform: espressif32
-            opts:
-  
-          - name: esp32dev|arduino-2
-            board: esp32dev
-            platform: espressif32@6.8.1
-            opts:
-          - name: esp32-s3-devkitc-1|arduino-2
-            board: esp32-s3-devkitc-1
-            platform: espressif32@6.8.1
-            opts:
-  
-          - name: esp32dev|arduino-3
-            board: esp32dev
-            platform: espressif32
-            opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.4, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/arduino-esp32/releases/download/3.0.4/esp32-arduino-libs-3.0.4.zip'"
-          - name: esp32-s3-devkitc-1|arduino-3
-            board: esp32-s3-devkitc-1
-            platform: espressif32
-            opts: "--project-option 'platform_packages=platformio/framework-arduinoespressif32 @ https://github.com/espressif/arduino-esp32.git#3.0.4, platform_packages=platformio/framework-arduinoespressif32-libs @ https://github.com/espressif/arduino-esp32/releases/download/3.0.4/esp32-arduino-libs-3.0.4.zip'"
-
-          - name: esp32dev|pioarduino
-            board: esp32dev
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
-          - name: esp32-s3-devkitc-1|pioarduino
-            board: esp32-s3-devkitc-1
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
-          - name: esp32-c6-devkitc-1|pioarduino
-            board: esp32-c6-devkitc-1
-            platform: https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip
-            opts: "--project-option 'platform=https://github.com/pioarduino/platform-espressif32/releases/download/51.03.04/platform-espressif32.zip'"
+        environment: ${{ fromJSON(needs.pio_envs.outputs.pio_default_envs) }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up cache
-        uses: actions/cache@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.platformio
             ~/.cache/pip
-          key: ${{ matrix.name }}
+          key: pio
       - uses: actions/setup-python@v5
         with:
           python-version: "3.x"
       - run: pip install platformio
-      - run: platformio platform install ${{ matrix.platform }}
-        
-      - name: Build Temperature
-        run: |
-          PLATFORMIO_BUILD_FLAGS="-std=c++17 -std=gnu++17" \
-          PLATFORMIO_BUILD_UNFLAGS="-std=gnu++11" \
-          platformio ci "examples/Temperature/Temperature.ino" -l '.' -b ${{ matrix.board }} ${{ matrix.opts }}
 
-      - name: Build TemperatureJson
-        run:  |
-          PLATFORMIO_BUILD_FLAGS="-std=c++17 -std=gnu++17 -DMYCILA_JSON_SUPPORT" \
-          PLATFORMIO_BUILD_UNFLAGS="-std=gnu++11" \
-          platformio ci "examples/TemperatureJson/TemperatureJson.ino" -l '.' --project-option="lib_deps=bblanchon/ArduinoJson" -b ${{ matrix.board }} ${{ matrix.opts }}
+      - name: Install platformio
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+
+      - run: PLATFORMIO_SRC_DIR=examples/Temperature pio run -e ${{ matrix.environment }}
+      - run: PLATFORMIO_SRC_DIR=examples/TemperatureJson pio run -e ${{ matrix.environment }}
