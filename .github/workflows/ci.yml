@@ -78,56 +78,51 @@ jobs:
       - name: Build TemperatureJson
         run: arduino-cli compile --library . --warnings all -b ${{ matrix.board }} "examples/TemperatureJson/TemperatureJson.ino" --build-property build.extra_flags=-DMYCILA_JSON_SUPPORT
 
-  pio_envs:
-    name: Get PlatformIO Envs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          key: pip
-          path: ~/.cache/pip
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-      - name: Get Envs
-        id: envs
-        run: |
-          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:") and (endswith("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
-
-    outputs:
-      pio_default_envs: ${{ steps.envs.outputs.pio_default_envs }}
-
   platformio:
-    name: "pio:${{ matrix.environment }}"
-    needs: [pio_envs]
+    name: "pio:${{ matrix.env }}:${{ matrix.board }}"
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        environment: ${{ fromJSON(needs.pio_envs.outputs.pio_default_envs) }}
+        include:
+          - env: ci-arduino-2
+            board: esp32dev
+          - env: ci-arduino-2
+            board: esp32-s3-devkitc-1
 
+          - env: ci-arduino-3
+            board: esp32dev
+          - env: ci-arduino-3
+            board: esp32-s3-devkitc-1
+          - env: ci-arduino-3
+            board: esp32-c6-devkitc-1
+
+          - env: ci-arduino-310rc1
+            board: esp32dev
+          - env: ci-arduino-310rc1
+            board: esp32-s3-devkitc-1
+          - env: ci-arduino-310rc1
+            board: esp32-c6-devkitc-1
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
         with:
+          key: ${{ runner.os }}-pio
           path: |
-            ~/.platformio
             ~/.cache/pip
-          key: pio
-      - uses: actions/setup-python@v5
+            ~/.platformio
+
+      - name: Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-      - run: pip install platformio
 
-      - name: Install platformio
+      - name: Build
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade platformio
 
-      - run: PLATFORMIO_SRC_DIR=examples/Temperature pio run -e ${{ matrix.environment }}
-      - run: PLATFORMIO_SRC_DIR=examples/TemperatureJson pio run -e ${{ matrix.environment }}
+      - run: PLATFORMIO_SRC_DIR=examples/Temperature PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
+      - run: PLATFORMIO_SRC_DIR=examples/TemperatureJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
