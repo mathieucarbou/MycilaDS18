@@ -96,11 +96,11 @@ jobs:
           - env: ci-arduino-3
             board: esp32-c6-devkitc-1
 
-          - env: ci-arduino-310rc1
+          - env: ci-arduino-310
             board: esp32dev
-          - env: ci-arduino-310rc1
+          - env: ci-arduino-310
             board: esp32-s3-devkitc-1
-          - env: ci-arduino-310rc1
+          - env: ci-arduino-310
             board: esp32-c6-devkitc-1
     steps:
       - name: Checkout
