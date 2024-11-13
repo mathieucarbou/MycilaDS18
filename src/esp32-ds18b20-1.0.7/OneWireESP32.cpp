@@ -16,7 +16,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #if ESP_IDF_VERSION_MAJOR < 5
 
   #include "OneWireESP32.h"
-  #include <Arduino.h>
 
 OneWire32::OneWire32(uint8_t pin, uint8_t tx, uint8_t rx, uint8_t parasite) {
   owpin = static_cast<gpio_num_t>(pin);

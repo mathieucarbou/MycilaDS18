@@ -13,7 +13,6 @@ https://github.com/junkfix/esp32-ds18b20
   #include "freertos/queue.h"
   #include "freertos/task.h"
   #include "sdkconfig.h"
-  #include <Arduino.h>
 
   #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
     #define MYCILA_DS18_MAX_BLOCKS 64

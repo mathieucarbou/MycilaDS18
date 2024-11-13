@@ -6,7 +6,6 @@ https://github.com/junkfix/esp32-ds18b20
 #if ESP_IDF_VERSION_MAJOR >= 5
 
   #include "OneWireESP32.h"
-  #include <Arduino.h>
 
   #define OWR_OK       0
   #define OWR_CRC      1

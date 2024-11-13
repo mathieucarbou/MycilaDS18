@@ -21,7 +21,6 @@ ESP32 / Arduino Library for Dallas / Maxim DS18 sensors using RMT peripheral
 ## Usage
 
 ```c++
-#include <Arduino.h>
 #include <MycilaDS18.h>
 
 Mycila::DS18 temp;
@@ -44,7 +43,7 @@ void loop() {
   if (!temp.read()) {
     Serial.println("Not ready yet");
   } else {
-    Serial.println("Temperature: " + String(temp.getTemperature().value_or(0)));
+    Serial.printf("Temperature: %s\n", std::to_string(temp.getTemperature().value_or(0)).c_str());
   }
   delay(500);
 }

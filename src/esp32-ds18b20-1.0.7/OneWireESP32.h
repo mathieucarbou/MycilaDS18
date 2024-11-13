@@ -6,7 +6,6 @@
 
   #include "driver/rmt.h"
   #include "soc/gpio_periph.h"
-  #include <Arduino.h>
 
   #define OW_DURATION_RESET   480
   #define OW_DURATION_SLOT    75
