@@ -20,10 +20,10 @@
 #include <mutex>
 #include <optional>
 
-#define MYCILA_DS18_VERSION          "4.1.1"
+#define MYCILA_DS18_VERSION          "4.1.2"
 #define MYCILA_DS18_VERSION_MAJOR    4
 #define MYCILA_DS18_VERSION_MINOR    1
-#define MYCILA_DS18_VERSION_REVISION 1
+#define MYCILA_DS18_VERSION_REVISION 2
 
 // If the temperature is changing from less than 0.3 degrees, we consider it has not changed, to avoid too many updates
 // Example:
