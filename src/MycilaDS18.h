@@ -15,6 +15,8 @@
   #include <ArduinoJson.h>
 #endif
 
+#include <esp32-hal.h>
+
 #include <mutex>
 #include <optional>
 
