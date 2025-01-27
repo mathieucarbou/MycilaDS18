@@ -92,7 +92,7 @@ bool Mycila::DS18::read() {
   }
 
   // discard any invalid read
-  if (isnan(read))
+  if (std::isnan(read))
     return false;
 
   // read is valid, record the time
