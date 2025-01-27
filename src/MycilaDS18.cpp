@@ -101,7 +101,7 @@ bool Mycila::DS18::read() {
   // make it on 2 decimals
   read = round(read * 100.0f) / 100.0f;
 
-  const bool changed = abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid();
+  const bool changed = std::abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid();
 
   if (changed) {
     _temperature = read;
