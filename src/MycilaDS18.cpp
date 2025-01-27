@@ -99,7 +99,7 @@ bool Mycila::DS18::read() {
   _lastTime = millis();
 
   // make it on 2 decimals
-  read = round(read * 100) / 100;
+  read = round(read * 100.0f) / 100.0f;
 
   const bool changed = abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid();
 
