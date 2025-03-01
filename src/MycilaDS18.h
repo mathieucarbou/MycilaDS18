@@ -5,11 +5,7 @@
 #pragma once
 
 #include <esp_idf_version.h>
-#if ESP_IDF_VERSION_MAJOR < 5
-  #include "./esp32-ds18b20-1.0.7/OneWireESP32.h"
-#else
-  #include "./esp32-ds18b20-2.0.1/OneWireESP32.h"
-#endif
+#include "./esp32-ds18b20/OneWireESP32.h"
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>

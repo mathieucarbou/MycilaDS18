@@ -2,26 +2,25 @@
 https://github.com/junkfix/esp32-ds18b20
 */
 
+#include "OneWireESP32.h"
+
 #include <esp_idf_version.h>
-#if ESP_IDF_VERSION_MAJOR >= 5
 
-  #include "OneWireESP32.h"
+#define OWR_OK       0
+#define OWR_CRC      1
+#define OWR_BAD_DATA 2
+#define OWR_TIMEOUT  3
+#define OWR_DRIVER   4
 
-  #define OWR_OK       0
-  #define OWR_CRC      1
-  #define OWR_BAD_DATA 2
-  #define OWR_TIMEOUT  3
-  #define OWR_DRIVER   4
-
-  #define OW_RESET_PULSE             500
-  #define OW_RESET_WAIT              200
-  #define OW_RESET_PRESENCE_WAIT_MIN 15
-  #define OW_RESET_PRESENCE_MIN      60
-  #define OW_SLOT_BIT_SAMPLE_TIME    15
-  #define OW_SLOT_START              2
-  #define OW_SLOT_BIT                60
-  #define OW_SLOT_RECOVERY           5
-  #define OW_TIMEOUT                 50
+#define OW_RESET_PULSE             500
+#define OW_RESET_WAIT              200
+#define OW_RESET_PRESENCE_WAIT_MIN 15
+#define OW_RESET_PRESENCE_MIN      60
+#define OW_SLOT_BIT_SAMPLE_TIME    15
+#define OW_SLOT_START              2
+#define OW_SLOT_BIT                60
+#define OW_SLOT_RECOVERY           5
+#define OW_TIMEOUT                 50
 
 const size_t owbuflen = 64 * sizeof(rmt_symbol_word_t);
 
@@ -46,9 +45,9 @@ const rmt_transmit_config_t owtxconf = {
 const rmt_receive_config_t owrxconf = {
   .signal_range_min_ns = 1000,
   .signal_range_max_ns = (OW_RESET_PULSE + OW_RESET_WAIT) * 1000,
-  #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 3, 0)
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 3, 0)
   .flags = {.en_partial_rx = 0}
-  #endif
+#endif
 };
 
 OneWire32::OneWire32(uint8_t pin) {
@@ -78,6 +77,9 @@ OneWire32::OneWire32(uint8_t pin) {
   rxconf.flags.with_dma = 0;
   rxconf.flags.io_loop_back = 0;
   rxconf.intr_priority = 0;
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0)
+  rxconf.flags.allow_pd = 0;
+#endif
 
   if (rmt_new_rx_channel(&rxconf, &(owrx)) != ESP_OK) {
     return;
@@ -94,6 +96,9 @@ OneWire32::OneWire32(uint8_t pin) {
   txconf.flags.with_dma = 0;
   txconf.flags.io_loop_back = 1;
   txconf.flags.io_od_mode = 1;
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0)
+  txconf.flags.allow_pd = 0;
+#endif
 
   if (rmt_new_tx_channel(&txconf, &owtx) != ESP_OK) {
     return;
@@ -340,5 +345,3 @@ uint8_t OneWire32::search(uint64_t* addresses, uint8_t total) {
   }
   return found;
 }
-
-#endif // ESP_IDF_VERSION_MAJOR >= 5
