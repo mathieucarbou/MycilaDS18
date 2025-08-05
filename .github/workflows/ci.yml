@@ -82,6 +82,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade platformio
+          pip install --upgrade intelhex
 
       - run: PLATFORMIO_SRC_DIR=examples/Temperature PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
       - run: PLATFORMIO_SRC_DIR=examples/TemperatureJson PIO_BOARD=${{ matrix.board }} pio run -e ${{ matrix.env }}
