@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2025 Mathieu Carbou
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <MycilaDS18.h>
 
@@ -64,7 +64,12 @@ void Mycila::DS18::end() {
   if (_enabled) {
     std::lock_guard<std::mutex> lock(_mutex);
     _enabled = false;
-    delete _oneWire;
+    if (_oneWire) {
+      delete _oneWire;
+      _oneWire = nullptr;
+      // Give some time for RMT channels to be properly released
+      vTaskDelay(pdMS_TO_TICKS(10));
+    }
     _temperature = 0;
     _lastTime = 0;
     _pin = GPIO_NUM_NC;
@@ -74,10 +79,10 @@ void Mycila::DS18::end() {
 }
 
 bool Mycila::DS18::read() {
+  std::lock_guard<std::mutex> lock(_mutex);
+
   if (!_enabled)
     return false;
-
-  std::lock_guard<std::mutex> lock(_mutex);
 
   float read;
   uint8_t err = _oneWire->getTemp(_deviceAddress, read);
