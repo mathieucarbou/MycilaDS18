@@ -11,8 +11,6 @@
                                                (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
 #endif
 
-static const char* err_desc[] = {"", "CRC ERROR", "BAD DATA", "TIMEOUT", "DRIVER NOT INITIALIZED"};
-
 void Mycila::DS18::begin(const int8_t pin, uint8_t maxSearchCount) {
   if (_enabled)
     return;
@@ -71,14 +69,29 @@ bool Mycila::DS18::read() {
     return false;
 
   float read;
-  uint8_t err = _oneWire->getTemp(_deviceAddress, read);
+  OneWire32::Result result = _oneWire->getTemp(_deviceAddress, read);
 
   // request new reading
   _oneWire->request();
 
   // process data when no error
-  if (err) {
-    ESP_LOGW(TAG, "%s 0x%llx @ pin %d: read error: %s", _name, _deviceAddress, _pin, err_desc[err]);
+  if (result != OneWire32::Result::OK) {
+    switch (result) {
+      case OneWire32::Result::OK:
+        break;
+      case OneWire32::Result::CRC:
+        ESP_LOGW(TAG, "%s 0x%llx @ pin %d: CRC error", _name, _deviceAddress, _pin);
+        return false;
+      case OneWire32::Result::BAD_DATA:
+        ESP_LOGW(TAG, "%s 0x%llx @ pin %d: Bad data", _name, _deviceAddress, _pin);
+        return false;
+      case OneWire32::Result::TIMEOUT:
+        ESP_LOGW(TAG, "%s 0x%llx @ pin %d: Timeout", _name, _deviceAddress, _pin);
+        return false;
+      case OneWire32::Result::DRIVER:
+        ESP_LOGW(TAG, "%s 0x%llx @ pin %d: Driver not initialized", _name, _deviceAddress, _pin);
+        return false;
+    }
     return false;
   }
 
