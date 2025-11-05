@@ -51,6 +51,8 @@ namespace Mycila {
       void listen(DS18ChangeCallback callback) { _callback = callback; }
 
       void begin(const int8_t pin, uint8_t maxSearchCount = 10);
+      void begin(const int8_t pin, uint64_t address);
+      void begin(OneWire32* oneWire, uint64_t address);
       void end();
 
       const char* getModel() const {
@@ -101,12 +103,15 @@ namespace Mycila {
         return std::nullopt;
       }
 
+      OneWire32* getOneWire() const { return _oneWire; }
+
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
 #endif
 
     private:
       OneWire32* _oneWire = nullptr;
+      bool _ownOneWire = true;
       uint64_t _deviceAddress = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;

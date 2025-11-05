@@ -34,11 +34,56 @@ void Mycila::DS18::begin(const int8_t pin, uint8_t maxSearchCount) {
     ESP_LOGE(TAG, "No DS18 sensor found on pin: %" PRId8, pin);
     return;
   }
+
   _name = getModel();
 
   ESP_LOGI(TAG, "Found %s sensor at address 0x%llx on pin: %" PRId8 " (remaining search count: %d)", _name, _deviceAddress, _pin, maxSearchCount);
 
-  _oneWire->request();
+  _oneWire->request(_deviceAddress);
+
+  ESP_LOGI(TAG, "%s 0x%llx @ pin %d enabled!", _name, _deviceAddress, _pin);
+  _enabled = true;
+}
+
+void Mycila::DS18::begin(const int8_t pin, uint64_t address) {
+  if (_enabled)
+    return;
+
+  if (GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
+    _pin = (gpio_num_t)pin;
+  } else {
+    ESP_LOGE(TAG, "Disable DS18 Sensor: Invalid pin: %" PRId8, pin);
+    _pin = GPIO_NUM_NC;
+    return;
+  }
+
+  _deviceAddress = address;
+
+  if (!_deviceAddress) {
+    ESP_LOGE(TAG, "Invalid DS18 sensor address: 0x%llx", address);
+    return;
+  }
+
+  _oneWire = new OneWire32(_pin);
+  _name = getModel();
+  _oneWire->request(_deviceAddress);
+
+  ESP_LOGI(TAG, "%s 0x%llx @ pin %d enabled!", _name, _deviceAddress, _pin);
+  _enabled = true;
+}
+
+void Mycila::DS18::begin(OneWire32* oneWire, uint64_t address) {
+  _deviceAddress = address;
+
+  if (!_deviceAddress) {
+    ESP_LOGE(TAG, "Invalid DS18 sensor address: 0x%llx", address);
+    return;
+  }
+
+  _oneWire = oneWire;
+  _ownOneWire = false;
+  _name = getModel();
+  _oneWire->request(_deviceAddress);
 
   ESP_LOGI(TAG, "%s 0x%llx @ pin %d enabled!", _name, _deviceAddress, _pin);
   _enabled = true;
@@ -48,7 +93,7 @@ void Mycila::DS18::end() {
   if (_enabled) {
     std::lock_guard<std::mutex> lock(_mutex);
     _enabled = false;
-    if (_oneWire) {
+    if (_ownOneWire && _oneWire) {
       delete _oneWire;
       _oneWire = nullptr;
       // Give some time for RMT channels to be properly released
@@ -72,7 +117,7 @@ bool Mycila::DS18::read() {
   OneWire32::Result result = _oneWire->getTemp(_deviceAddress, read);
 
   // request new reading
-  _oneWire->request();
+  _oneWire->request(_deviceAddress);
 
   // process data when no error
   if (result != OneWire32::Result::OK) {
