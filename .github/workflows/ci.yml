@@ -56,13 +56,6 @@ jobs:
             board: esp32s3box
           - env: ci-arduino-3
             board: esp32-c6-devkitc-1
-
-          # - env: ci-arduino-rc
-          #   board: esp32dev
-          # - env: ci-arduino-rc
-          #   board: esp32-s3-devkitc-1
-          # - env: ci-arduino-rc
-          #   board: esp32-c6-devkitc-1
     steps:
       - name: Checkout
         uses: actions/checkout@v5
