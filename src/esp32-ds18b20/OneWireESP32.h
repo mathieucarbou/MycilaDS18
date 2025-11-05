@@ -11,8 +11,6 @@ https://github.com/junkfix/esp32-ds18b20
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
-IRAM_ATTR bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, void* udata);
-
 class OneWire32 {
   private:
     gpio_num_t owpin;

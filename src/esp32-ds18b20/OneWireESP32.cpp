@@ -50,6 +50,12 @@ const rmt_receive_config_t owrxconf = {
 #endif
 };
 
+IRAM_ATTR static bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, void* udata) {
+  BaseType_t h = pdFALSE;
+  xQueueSendFromISR((QueueHandle_t)udata, edata, &h);
+  return (h == pdTRUE);
+}
+
 OneWire32::OneWire32(uint8_t pin) {
   owbuf = new rmt_symbol_word_t[DS18_MAX_BLOCKS];
 
@@ -157,12 +163,6 @@ OneWire32::~OneWire32() {
   }
   drv = 0;
   delete[] owbuf;
-}
-
-bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, void* udata) {
-  BaseType_t h = pdFALSE;
-  xQueueSendFromISR((QueueHandle_t)udata, edata, &h);
-  return (h == pdTRUE);
 }
 
 bool OneWire32::reset() {
