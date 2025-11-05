@@ -81,6 +81,7 @@ namespace Mycila {
       bool read();
 
       gpio_num_t getPin() const { return _pin; };
+      uint64_t getAddress() const { return _deviceAddress; };
       bool isEnabled() const { return _enabled; }
 
       // Get the last time when the temperature was read
