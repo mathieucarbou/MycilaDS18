@@ -16,7 +16,13 @@ https://github.com/junkfix/esp32-ds18b20
 #define OW_SLOT_RECOVERY           5
 #define OW_TIMEOUT                 50
 
-const size_t owbuflen = 64 * sizeof(rmt_symbol_word_t);
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+  #define DS18_MAX_BLOCKS 64
+#else
+  #define DS18_MAX_BLOCKS 48
+#endif
+
+static constexpr size_t owbuflen = DS18_MAX_BLOCKS * sizeof(rmt_symbol_word_t);
 
 static rmt_symbol_word_t ow_bit0 = {
   .duration0 = OW_SLOT_START + OW_SLOT_BIT,
@@ -45,6 +51,8 @@ const rmt_receive_config_t owrxconf = {
 };
 
 OneWire32::OneWire32(uint8_t pin) {
+  owbuf = new rmt_symbol_word_t[DS18_MAX_BLOCKS];
+
   owpin = static_cast<gpio_num_t>(pin);
 
   rmt_bytes_encoder_config_t bnc;
@@ -66,7 +74,7 @@ OneWire32::OneWire32(uint8_t pin) {
   rxconf.gpio_num = owpin;
   rxconf.clk_src = RMT_CLK_SRC_DEFAULT;
   rxconf.resolution_hz = 1000000;
-  rxconf.mem_block_symbols = MYCILA_DS18_MAX_BLOCKS;
+  rxconf.mem_block_symbols = DS18_MAX_BLOCKS;
   rxconf.flags.invert_in = 0;
   rxconf.flags.with_dma = 0;
   rxconf.flags.io_loop_back = 0;
@@ -83,7 +91,7 @@ OneWire32::OneWire32(uint8_t pin) {
   txconf.gpio_num = owpin;
   txconf.clk_src = RMT_CLK_SRC_DEFAULT;
   txconf.resolution_hz = 1000000;
-  txconf.mem_block_symbols = MYCILA_DS18_MAX_BLOCKS;
+  txconf.mem_block_symbols = DS18_MAX_BLOCKS;
   txconf.trans_queue_depth = 4;
   txconf.intr_priority = 0;
   txconf.flags.invert_out = 0;
@@ -148,6 +156,7 @@ OneWire32::~OneWire32() {
     vQueueDelete(owqueue);
   }
   drv = 0;
+  delete[] owbuf;
 }
 
 bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, void* udata) {
@@ -165,7 +174,7 @@ bool OneWire32::reset() {
   symbol_reset.level1 = 1;
 
   rmt_rx_done_event_data_t evt;
-  rmt_receive(owrx, owbuf, sizeof(owbuf), &owrxconf);
+  rmt_receive(owrx, owbuf, owbuflen, &owrxconf);
   rmt_transmit(owtx, owcenc, &symbol_reset, sizeof(rmt_symbol_word_t), &owtxconf);
   bool found = false;
   if (xQueueReceive(owqueue, &evt, pdMS_TO_TICKS(OW_TIMEOUT)) == pdTRUE) {
@@ -193,7 +202,7 @@ bool OneWire32::reset() {
 bool OneWire32::read(uint8_t& data, uint8_t len) {
 
   rmt_rx_done_event_data_t evt;
-  rmt_receive(owrx, owbuf, sizeof(owbuf), &owrxconf);
+  rmt_receive(owrx, owbuf, owbuflen, &owrxconf);
 
   if (!write((len > 1) ? 0xff : 1, len) || xQueueReceive(owqueue, &evt, pdMS_TO_TICKS(OW_TIMEOUT)) != pdTRUE) {
     return false;

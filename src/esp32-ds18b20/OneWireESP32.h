@@ -11,12 +11,6 @@ https://github.com/junkfix/esp32-ds18b20
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
-  #define MYCILA_DS18_MAX_BLOCKS 64
-#else
-  #define MYCILA_DS18_MAX_BLOCKS 48
-#endif
-
 IRAM_ATTR bool owrxdone(rmt_channel_handle_t ch, const rmt_rx_done_event_data_t* edata, void* udata);
 
 class OneWire32 {
@@ -26,7 +20,7 @@ class OneWire32 {
     rmt_channel_handle_t owrx;
     rmt_encoder_handle_t owcenc;
     rmt_encoder_handle_t owbenc;
-    rmt_symbol_word_t owbuf[MYCILA_DS18_MAX_BLOCKS];
+    rmt_symbol_word_t* owbuf;
     QueueHandle_t owqueue;
     uint8_t drv = 0;
 
