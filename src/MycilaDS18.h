@@ -94,7 +94,12 @@ namespace Mycila {
       bool isValid() const { return _enabled && _lastTime > 0 && !isExpired(); }
 
       // Get the temperature in Celsius
-      std::optional<float> getTemperature() const { return isValid() ? std::optional<float>(_temperature) : std::nullopt; }
+      std::optional<float> getTemperature() const {
+        if (isValid()) {
+          return _temperature;
+        }
+        return std::nullopt;
+      }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
