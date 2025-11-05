@@ -121,8 +121,9 @@ bool Mycila::DS18::read() {
 
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::DS18::toJson(const JsonObject& root) const {
-  root["elapsed"] = getElapsedTime();
   root["enabled"] = _enabled;
+  root["model"] = getModel();
+  root["elapsed"] = getElapsedTime();
   root["expired"] = isExpired();
   root["temp"] = getTemperature().value_or(0);
   root["time"] = _lastTime;
