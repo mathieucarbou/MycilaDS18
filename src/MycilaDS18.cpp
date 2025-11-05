@@ -81,6 +81,7 @@ void Mycila::DS18::begin(OneWire32* oneWire, uint64_t address) {
   }
 
   _oneWire = oneWire;
+  _pin = oneWire->pin();
   _ownOneWire = false;
   _name = getModel();
   _oneWire->request(_deviceAddress);

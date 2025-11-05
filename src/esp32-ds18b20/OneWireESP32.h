@@ -33,6 +33,7 @@ class OneWire32 {
 
     OneWire32(uint8_t pin);
     ~OneWire32();
+    gpio_num_t pin() const { return owpin; }
     bool reset();
     void request();
     void request(uint64_t &addr);
