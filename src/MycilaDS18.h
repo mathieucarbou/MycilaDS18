@@ -15,6 +15,7 @@
 
 #include <mutex>
 #include <optional>
+#include <utility> 
 
 #define MYCILA_DS18_VERSION          "5.1.0"
 #define MYCILA_DS18_VERSION_MAJOR    5
@@ -48,7 +49,7 @@ namespace Mycila {
       void setExpirationDelay(uint32_t seconds) { _expirationDelay = seconds; }
       uint32_t getExpirationDelay() const { return _expirationDelay; }
 
-      void listen(DS18ChangeCallback callback) { _callback = callback; }
+      void listen(DS18ChangeCallback callback) { _callback = std::move(callback); }
 
       void begin(const int8_t pin, uint8_t maxSearchCount = 10);
       void begin(const int8_t pin, uint64_t address);
