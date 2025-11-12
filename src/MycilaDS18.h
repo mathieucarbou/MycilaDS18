@@ -15,7 +15,7 @@
 
 #include <mutex>
 #include <optional>
-#include <utility> 
+#include <utility>
 
 #define MYCILA_DS18_VERSION          "5.1.1"
 #define MYCILA_DS18_VERSION_MAJOR    5
