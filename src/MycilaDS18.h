@@ -17,10 +17,10 @@
 #include <optional>
 #include <utility> 
 
-#define MYCILA_DS18_VERSION          "5.1.0"
+#define MYCILA_DS18_VERSION          "5.1.1"
 #define MYCILA_DS18_VERSION_MAJOR    5
 #define MYCILA_DS18_VERSION_MINOR    1
-#define MYCILA_DS18_VERSION_REVISION 0
+#define MYCILA_DS18_VERSION_REVISION 1
 
 // If the temperature is changing from less than 0.3 degrees, we consider it has not changed, to avoid too many updates
 // Example:
