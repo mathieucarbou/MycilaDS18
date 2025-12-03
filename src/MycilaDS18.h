@@ -5,6 +5,7 @@
 #pragma once
 
 #include <esp_idf_version.h>
+
 #include "./esp32-ds18b20/OneWireESP32.h"
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -15,12 +16,11 @@
 
 #include <mutex>
 #include <optional>
-#include <utility>
 
-#define MYCILA_DS18_VERSION          "5.1.1"
+#define MYCILA_DS18_VERSION          "5.2.0"
 #define MYCILA_DS18_VERSION_MAJOR    5
-#define MYCILA_DS18_VERSION_MINOR    1
-#define MYCILA_DS18_VERSION_REVISION 1
+#define MYCILA_DS18_VERSION_MINOR    2
+#define MYCILA_DS18_VERSION_REVISION 0
 
 // If the temperature is changing from less than 0.3 degrees, we consider it has not changed, to avoid too many updates
 // Example:
@@ -107,6 +107,14 @@ namespace Mycila {
 
       OneWire32* getOneWire() const { return _oneWire; }
 
+      float getThreshold() const { return _threshold; }
+
+      /**
+       * @brief Set the temperature change threshold to consider a change relevant enough to trigger the callback
+       * @param threshold The temperature change threshold in degrees Celsius, default is MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE
+       */
+      void setThreshold(float threshold) { _threshold = threshold; }
+
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;
 #endif
@@ -119,6 +127,7 @@ namespace Mycila {
       bool _enabled = false;
       const char* _name = "Unknown";
       float _temperature = 0;
+      float _threshold = MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE;
       uint32_t _lastTime = 0;
       uint32_t _expirationDelay = 0;
       DS18ChangeCallback _callback = nullptr;

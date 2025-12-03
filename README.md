@@ -232,7 +232,7 @@ void setup() {
     continue;
 
   temp.begin(18);
-  
+
   temp.listen([](float temperature, bool changed) {
     JsonDocument doc;
     temp.toJson(doc.to<JsonObject>());
@@ -260,21 +260,21 @@ void setup() {
     continue;
 
   temp.begin(18);
-  
+
   // Temperature readings expire after 30 seconds
   temp.setExpirationDelay(30);
 }
 
 void loop() {
   temp.read();
-  
+
   if (temp.isValid()) {
     float t = temp.getTemperature().value_or(0);
     Serial.printf("Valid temperature: %.2f°C\n", t);
   } else if (temp.isExpired()) {
     Serial.println("Temperature reading expired!");
   }
-  
+
   delay(2000);
 }
 ```

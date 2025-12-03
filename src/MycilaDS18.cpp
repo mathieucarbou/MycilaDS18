@@ -148,14 +148,11 @@ bool Mycila::DS18::read() {
   // read is valid, record the time
   _lastTime = millis();
 
-  // make it on 2 decimals
-  read = round(read * 100.0f) / 100.0f;
-
-  const bool changed = std::abs(read - _temperature) >= MYCILA_DS18_RELEVANT_TEMPERATURE_CHANGE || !isValid();
+  const bool changed = std::abs(read - _temperature) > _threshold || !isValid();
 
   if (changed) {
     _temperature = read;
-    ESP_LOGD(TAG, "%s 0x%llx @ pin %d: %.2f °C", _name, _deviceAddress, _pin, read);
+    ESP_LOGD(TAG, "%s 0x%llx @ pin %d: %f °C", _name, _deviceAddress, _pin, read);
   }
 
   if (_callback)

@@ -36,7 +36,7 @@ class OneWire32 {
     gpio_num_t pin() const { return owpin; }
     bool reset();
     void request();
-    void request(uint64_t &addr);
+    void request(uint64_t& addr);
     Result getTemp(uint64_t& addr, float& temp);
     uint8_t search(uint64_t* addresses, uint8_t total);
     bool read(uint8_t& data, uint8_t len = 8);
