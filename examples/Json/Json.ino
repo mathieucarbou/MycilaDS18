@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+/*
+ * Copyright (C) Mathieu Carbou
+ */
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <MycilaDS18.h>
