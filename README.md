@@ -8,7 +8,6 @@
 
 [![Build](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml/badge.svg)](https://github.com/mathieucarbou/MycilaDS18/actions/workflows/ci.yml)
 [![GitHub latest commit](https://badgen.net/github/last-commit/mathieucarbou/MycilaDS18)](https://GitHub.com/mathieucarbou/MycilaDS18/commit/)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/mathieucarbou/MycilaDS18)
 
 ESP32 / Arduino Library for Dallas / Maxim DS18 sensors using RMT peripheral
 
