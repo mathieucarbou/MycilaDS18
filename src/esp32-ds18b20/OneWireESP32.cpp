@@ -83,7 +83,9 @@ OneWire32::OneWire32(uint8_t pin) {
   rxconf.mem_block_symbols = DS18_MAX_BLOCKS;
   rxconf.flags.invert_in = 0;
   rxconf.flags.with_dma = 0;
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(6, 0, 0)
   rxconf.flags.io_loop_back = 0;
+#endif
   rxconf.intr_priority = 0;
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0)
   rxconf.flags.allow_pd = 0;
@@ -102,8 +104,10 @@ OneWire32::OneWire32(uint8_t pin) {
   txconf.intr_priority = 0;
   txconf.flags.invert_out = 0;
   txconf.flags.with_dma = 0;
+#if ESP_IDF_VERSION < ESP_IDF_VERSION_VAL(6, 0, 0)
   txconf.flags.io_loop_back = 1;
   txconf.flags.io_od_mode = 1;
+#endif
 #if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 4, 0)
   txconf.flags.allow_pd = 0;
 #endif
